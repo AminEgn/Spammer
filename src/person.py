@@ -1,17 +1,8 @@
 # standard
 import random
 # internal
-import connection
+from src.base import Factory
 # faker
-from faker import Faker
-
-confs = {
-    'server': '.\\Moein',
-    'username': 'sa',
-    'password': 'arta0@',
-    'database': 'Moein'
-}
-conn = connection.get(**confs)
 
 query_person_group_select = """SELECT Id FROM GroupAshkhas"""
 query_person_group_insert = """INSERT INTO GroupAshkhas(parentId, caption, sms) values (?, ?, 1)"""
@@ -37,34 +28,6 @@ VALUES
 """
 
 
-class Factory(object):
-    """Factory"""
-    def __init__(self):
-        self.cursor = conn.cursor()
-        self.fake = Faker()
-
-    def create(self):
-        pass
-
-    def delete(self):
-        pass
-
-    def update(self):
-        pass
-
-    def create_more(self, n):
-        for i in range(0, n):
-            self.create()
-
-    def delete_more(self, n):
-        for i in range(0, n):
-            self.delete()
-
-    def update_more(self, n):
-        for i in range(0, n):
-            self.update()
-
-
 class PersonGroupFactory(Factory):
     """Person Group Factory"""
     def create(self):
@@ -85,12 +48,12 @@ class PersonFactory(Factory):
     def get_group(self):
         rc = random.choices([True, False], [1, 15])
         if rc[0]:
-            pg = PersonGroupFactory()
+            pg = PersonGroupFactory(self.conn)
             pg.create()
         groups = self.cursor.execute(query_person_group_select)
         gpfetch = groups.fetchall()
         if not gpfetch:
-            pg = PersonGroupFactory()
+            pg = PersonGroupFactory(self.conn)
             pg.create()
         get = random.choice(gpfetch)[0]
         return get
@@ -123,19 +86,31 @@ class PersonFactory(Factory):
             self.fake.address()
         ]
         self.cursor.execute(query_person_insert, params)
-        # last_id = self.cursor.fetchval()
         self.cursor.commit()
         self.person_tel(random.choice([2, 3, 4]))
-        # print(f"inserted id = {last_id}")
-
 
     def delete(self):
         iden = self.cursor.execute(query_person_id_select)
         selected = random.choice(iden.fetchall())[0]
         self.cursor.execute(query_person_delete, selected)
-        # deleted_id = self.cursor.fetchval()
         self.cursor.commit()
-        # print(f'id {deleted_id} deleted')
+
+    def update(self):
+        iden = self.cursor.execute(query_person_id_select)
+        selected = random.choice(iden.fetchall())[0]
+        first_name = self.fake.first_name()
+        last_name = self.fake.last_name()
+        name = f'{first_name} {last_name}'
+        params = [
+            first_name, last_name, name, self.fake.job(), self.fake.city(), self.fake.url(),
+            self.fake.email(), selected
+        ]
+        self.cursor.execute("""
+            UPDATE AshkhasList SET fname = ?, lname = ?, name = ?, job = ?, city = ?,
+            site = ?, email = ?
+            WHERE ID = ?
+        """, params)
+        self.cursor.commit()
 
 
 if __name__ == '__main__':
