@@ -81,8 +81,7 @@ class ProductFactory(Factory):
             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
         """, params)
         self.cursor.commit()
-        self.cursor.execute("""SELECT IDENT_CURRENT('KalaList')""")
-        last_product_insert = self.cursor.fetchval()
+        last_product_insert = self.cursor.execute("""SELECT IDENT_CURRENT('KalaList')""").fetchval()
         self.set_prices(last_product_insert)
         self.set_barcode(last_product_insert)
         self.set_quantity(last_product_insert, numbers)
