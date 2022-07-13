@@ -1,7 +1,7 @@
 # standard
 import random
 # internal
-from src.base import Factory
+from src.local.base import Factory
 
 
 class RepositoryFactory(Factory):
@@ -38,6 +38,7 @@ class ProductFactory(Factory):
         if rc[0]:
             c = CategoryFactory(self.conn)
             c.create()
+            self.set_repository()
         category = self.cursor.execute("""SELECT * FROM GroupKala""")
         categoryfetch = category.fetchall()
         if not categoryfetch:
@@ -58,6 +59,10 @@ class ProductFactory(Factory):
     def set_quantity(self, product_id, nums):
         quantity = QuantityFactory(self.conn)
         quantity.create(product_id, nums)
+
+    def set_repository(self):
+        repo = RepositoryFactory(self.conn)
+        repo.create()
 
     def create(self):
         max_code = self.cursor.execute("""SELECT Max(Code) FROM KalaList""").fetchone()[0]
