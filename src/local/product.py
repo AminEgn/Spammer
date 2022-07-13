@@ -3,6 +3,7 @@ import random
 # internal
 from src.base import Factory
 
+
 class RepositoryFactory(Factory):
     """Repository Factory"""
     def create(self):

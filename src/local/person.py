@@ -12,13 +12,13 @@ query_person_id_select = """SELECT Id FROM AshkhasList"""
 query_person_delete = """DELETE FROM AshkhasList WHERE id = ?"""
 query_person_insert = """
 INSERT INTO AshkhasList(
-code, name, fname, lname, prefix, eghtesadi, melli, site, email,
-info, city, address, company, groupid, job, state, visitorperc, etebarnaghd,
-buypricelevel, sellpricelevel, etebarcheque, carryprice, visitor,
-visitorbed, posti, cardno, hesabno, sabt, companyaddress
+code, name, fname, lname, prefix, eghtesadi, melli, site, email, info, city, address,
+company, groupid, job, state, visitorperc, etebarnaghd, buypricelevel, sellpricelevel,
+etebarcheque, carryprice, visitor, visitorbed, posti, cardno, hesabno, sabt,
+companyaddress, visitortype, peyk
 )
 VALUES
-(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 0, 0.00, ?, ?, 0.00, 0.00, 0, 0, ?, ?, ?, ?, ?)
+(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 0.00, ?, ?, 0.00, ?, ?, 0, ?, ?, ?, ?, ?, 1, ?)
 """
 query_price_level = """SELECT ID FROM PriceLevel"""
 query_person_tel_insert = """
@@ -77,13 +77,25 @@ class PersonFactory(Factory):
         last_name = self.fake.last_name()
         pricel_level = self.get_price_level()
         name = f'{first_name} {last_name}'
+        visitor = random.choices([1, 0], [1, 6])[0]
+        delivery = 0
+        delivery_price = 0
+        if visitor:
+            visitor_percent = self.fake.random_number(digits=2, fix_len=False)
+        else:
+            visitor_percent = 0.0
+            delivery = random.choices([1, 0], [1, 6])[0]
+            if delivery:
+                delivery_price = self.fake.random_number(digits=4)
+
         params = [
             max_code, name, first_name, last_name, self.fake.prefix(), str(self.fake.msisdn()),
             str(self.fake.random_number()), self.fake.url(), self.fake.email(), self.fake.text(),
             self.fake.city(), self.fake.address(), self.fake.company(), self.get_group(),
-            self.fake.job(), self.fake.state(), pricel_level, pricel_level, self.fake.zipcode(),
-            str(self.fake.random_number()), str(self.fake.random_number()), str(self.fake.random_number()),
-            self.fake.address()
+            self.fake.job(), self.fake.state(), visitor_percent, pricel_level, pricel_level,
+            delivery_price, visitor, str(self.fake.zipcode()), str(self.fake.random_number(digits=16)),
+            str(self.fake.random_number(digits=14)), str(self.fake.random_number(digits=8)),
+            self.fake.address(), delivery
         ]
         self.cursor.execute(query_person_insert, params)
         self.cursor.commit()
@@ -111,15 +123,3 @@ class PersonFactory(Factory):
             WHERE ID = ?
         """, params)
         self.cursor.commit()
-
-
-if __name__ == '__main__':
-    whats = input('whats you want? ')
-    nums = input('how many? ')
-    int_what, int_nums = int(whats), int(nums)
-    pf = PersonFactory()
-    if int_what == 1:
-        pf.delete_more(int_nums)
-    elif int_what == 2:
-        pf.create_more(int_nums)
-    print('finished')
