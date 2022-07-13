@@ -6,8 +6,11 @@ class Factory(object):
     """Factory"""
     def __init__(self, conn):
         self.conn = conn
-        self.cursor = self.conn.cursor()
         self.fake = Faker()
+
+    @property
+    def cursor(self):
+        return self.conn.cursor()
 
     def create(self):
         pass
