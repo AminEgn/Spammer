@@ -1,8 +1,8 @@
 # standard
 import random
 # internal
-from src.base import Factory
-# faker
+from src.local.base import Factory
+
 
 query_person_group_select = """SELECT Id FROM GroupAshkhas"""
 query_person_group_insert = """INSERT INTO GroupAshkhas(parentId, caption, sms) values (?, ?, 1)"""
@@ -66,7 +66,7 @@ class PersonFactory(Factory):
     def person_tel(self, r):
         max_id = self.cursor.execute(query_person_max_id).fetchone()[0]
         for _ in range(1, r):
-            params = [max_id, self.fake.random_number()]
+            params = [max_id, self.fake.phone_number()]
             self.cursor.execute(query_person_tel_insert, params)
             self.cursor.commit()
 
@@ -89,13 +89,33 @@ class PersonFactory(Factory):
                 delivery_price = self.fake.random_number(digits=4)
 
         params = [
-            max_code, name, first_name, last_name, self.fake.prefix(), str(self.fake.msisdn()),
-            str(self.fake.random_number()), self.fake.url(), self.fake.email(), self.fake.text(),
-            self.fake.city(), self.fake.address(), self.fake.company(), self.get_group(),
-            self.fake.job(), self.fake.state(), visitor_percent, pricel_level, pricel_level,
-            delivery_price, visitor, str(self.fake.zipcode()), str(self.fake.random_number(digits=16)),
-            str(self.fake.random_number(digits=14)), str(self.fake.random_number(digits=8)),
-            self.fake.address(), delivery
+            max_code,
+            name,
+            first_name,
+            last_name,
+            self.fake.prefix(),
+            str(self.fake.random_number(digits=10)),
+            str(self.fake.random_number(digits=11)),
+            self.fake.url(),
+            self.fake.email(),
+            self.fake.text(),
+            self.fake.city(),
+            self.fake.address(),
+            self.fake.company(),
+            self.get_group(),
+            self.fake.job(),
+            self.fake.state(),
+            visitor_percent,
+            pricel_level,
+            pricel_level,
+            delivery_price,
+            visitor,
+            str(self.fake.zipcode()),
+            str(self.fake.random_number(digits=16)),
+            str(self.fake.random_number(digits=14)),
+            str(self.fake.random_number(digits=8)),
+            self.fake.address(),
+            delivery
         ]
         self.cursor.execute(query_person_insert, params)
         self.cursor.commit()
