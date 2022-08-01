@@ -34,13 +34,10 @@ class CategoryFactory(Factory):
 class ProductFactory(Factory):
     """Product Factory"""
     def get_category(self):
-        rc = random.choices([True, False], [1, 30])
+        rc = random.choices([True, False], [1, 40])
         if rc[0]:
             c = CategoryFactory(self.conn)
             c.create()
-            # rr = random.choices([True, False], [1, 100])
-            # if rr[0]:
-            #     self.set_repository()
 
         category = self.cursor.execute("""SELECT * FROM GroupKala""")
         categoryfetch = category.fetchall()
