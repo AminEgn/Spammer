@@ -32,7 +32,7 @@ class PersonGroupFactory(Factory):
     """Person Group Factory"""
     def create(self):
         parent = 0
-        have_parent = random.choices([True, False], [1, 4])
+        have_parent = random.choices([True, False], [1, 10])
         if have_parent[0]:
             parents = self.cursor.execute(query_person_group_select)
             parentfetch = parents.fetchall()
@@ -46,7 +46,7 @@ class PersonGroupFactory(Factory):
 class PersonFactory(Factory):
     """Person Factory"""
     def get_group(self):
-        rc = random.choices([True, False], [1, 15])
+        rc = random.choices([True, False], [1, 40])
         if rc[0]:
             pg = PersonGroupFactory(self.conn)
             pg.create()
@@ -77,14 +77,14 @@ class PersonFactory(Factory):
         last_name = self.fake.last_name()
         pricel_level = self.get_price_level()
         name = f'{first_name} {last_name}'
-        visitor = random.choices([1, 0], [1, 6])[0]
+        visitor = random.choices([1, 0], [1, 8])[0]
         delivery = 0
         delivery_price = 0
         if visitor:
             visitor_percent = self.fake.random_number(digits=2, fix_len=False)
         else:
             visitor_percent = 0.0
-            delivery = random.choices([1, 0], [1, 6])[0]
+            delivery = random.choices([1, 0], [1, 8])[0]
             if delivery:
                 delivery_price = self.fake.random_number(digits=4)
 
@@ -122,10 +122,11 @@ class PersonFactory(Factory):
         self.person_tel(random.choice([2, 3, 4]))
 
     def delete(self):
-        iden = self.cursor.execute(query_person_id_select)
-        selected = random.choice(iden.fetchall())[0]
-        self.cursor.execute(query_person_delete, selected)
-        self.cursor.commit()
+        pass
+        # iden = self.cursor.execute(query_person_id_select)
+        # selected = random.choice(iden.fetchall())[0]
+        # self.cursor.execute(query_person_delete, selected)
+        # self.cursor.commit()
 
     def update(self):
         iden = self.cursor.execute(query_person_id_select)
