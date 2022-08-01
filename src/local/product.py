@@ -34,11 +34,14 @@ class CategoryFactory(Factory):
 class ProductFactory(Factory):
     """Product Factory"""
     def get_category(self):
-        rc = random.choices([True, False], [1, 20])
+        rc = random.choices([True, False], [1, 30])
         if rc[0]:
             c = CategoryFactory(self.conn)
             c.create()
-            self.set_repository()
+            # rr = random.choices([True, False], [1, 100])
+            # if rr[0]:
+            #     self.set_repository()
+
         category = self.cursor.execute("""SELECT * FROM GroupKala""")
         categoryfetch = category.fetchall()
         if not categoryfetch:
@@ -87,10 +90,14 @@ class ProductFactory(Factory):
         self.set_quantity(last_product_insert, numbers)
 
     def delete(self):
-        iden = self.cursor.execute("""SELECT ID FROM KalaList""")
-        selected = random.choice(iden.fetchall())[0]
-        self.cursor.execute("""DELETE FROM KalaList WHERE ID = ?""", selected)
-        self.cursor.commit()
+        pass
+        # iden = self.cursor.execute("""SELECT ID FROM KalaList""")
+        # selected = random.choice(iden.fetchall())
+        # product_iden_factor_detail = self.cursor.execute("""SELECT ID FROM Faktor2 WHERE IDKala = ?""", selected)
+        # if product_iden_factor_detail.fetchone():
+        #     return
+        # self.cursor.execute("""DELETE FROM KalaList WHERE ID = ?""", selected)
+        # self.cursor.commit()
 
     def update(self):
         iden = self.cursor.execute("""SELECT ID FROM KalaList""")
@@ -143,11 +150,11 @@ class QuantityFactory(Factory):
         price = self.fake.random_number(digits=4)
         sum_price = float(nums * price)
         params = [
-            product_id, nums, sum_price, price, self.set_repo()
+            product_id, nums, sum_price, price, self.set_repo(), 0, 0
         ]
         self.cursor.execute("""
-                INSERT INTO MojodiList(IdKala, Tedad, SumPrice, Price, Anbar)
-                VALUES (?, ?, ?, ?, ?)
+                INSERT INTO MojodiList(IdKala, Tedad, SumPrice, Price, Anbar, Tedad1, Tedad2)
+                VALUES (?, ?, ?, ?, ?, ?, ?)
             """, params)
         self.cursor.commit()
 
