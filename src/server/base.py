@@ -4,7 +4,7 @@ from faker import Faker
 
 class Factory(object):
     """Factory"""
-    def __init__(self, conn, url, headers):
+    def __init__(self, conn=None, url=None, headers=None):
         self.conn = conn
         self.headers = headers
         self.url = url
