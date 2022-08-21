@@ -8,6 +8,7 @@ from src.local.product import ProductFactory
 from src.local.person import PersonFactory
 from src.server.invoices import InvoiceWebFactory
 from src.local.portions import PortionFactory
+from src.server.persons import PersonWebFactory
 
 
 confs = {
@@ -27,19 +28,22 @@ person = PersonFactory(conn)
 product = ProductFactory(conn)
 invoice = InvoiceWebFactory(conn, URL, HEADERS)
 portion = PortionFactory(conn)
+person_web = PersonWebFactory(conn, URL, HEADERS)
 
 factories = (
     person,
     product,
     invoice,
     portion,
+    person_web
 )
 
 track_tuple_key = (
     'Person',
     'Product',
     'Invoice',
-    'Portion'
+    'Portion',
+    'PersonWeb'
 )
 track_tuple_value = (
     'COUNT',
@@ -57,7 +61,7 @@ for k in track_dict.keys():
 def first_time():
     for i, factory in enumerate(factories):
         if i < 2:
-            nums = 50
+            nums = 40
         else:
             nums = 10
         factory.create_more(nums)
@@ -66,7 +70,7 @@ def main(timesleep):
     while True:
         how_many = random.randint(1, 6)
         what_to_do = random.choices([1, 2, 3], [1, 5, 2])[0]
-        chosen = random.choices([0, 1, 2, 3], [10, 10, 5, 2])[0]
+        chosen = random.choices([0, 1, 2, 3, 4], [10, 10, 5, 2, 5])[0]
         table = factories[chosen]
         table_name = track_tuple_key[chosen]
         act = track_tuple_value[what_to_do]
@@ -99,7 +103,11 @@ def main(timesleep):
 
 if __name__ == '__main__':
     time_interval = int(input('how much time sleep? '))
-    ft = True
+    activate_first_time = input('first time activate? [yes/no or y/n] ')
+    if 'y' in activate_first_time or 'yes' in activate_first_time:
+        ft = True
+    else:
+        ft = False
     if ft:
         print('first time activated')
         first_time()
